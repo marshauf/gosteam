@@ -2,6 +2,7 @@ package steam
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -42,6 +43,21 @@ type AppData struct {
 type Requirements struct {
 	Minimum     string `json:"minimum"`
 	Recommended string `json:"recommended"`
+	unmarshaled bool
+}
+
+func (r *Requirements) UnmarshalJSON(b []byte) error {
+	if r.unmarshaled {
+		return nil
+	}
+	r.unmarshaled = true
+	if len(b) == 0 {
+		return nil
+	}
+	if b[0] == '[' {
+		return nil
+	}
+	return json.Unmarshal(b, r)
 }
 
 type PriceOverview struct {
@@ -142,18 +158,13 @@ type SupportInfo struct {
 	Email string `json:"email"`
 }
 
-func GetAppDetails(appIds ...int) (map[string]*AppDetail, error) {
-	//http://store.steampowered.com/api/appdetails?appids=57690&cc=us
-	req, err := http.NewRequest("GET", "http://store.steampowered.com/api/appdetails", nil)
+func GetAppDetails(appId int) (map[string]AppDetail, error) {
+	req, err := http.NewRequest("GET", "http://api.steampowered.com/ISteamApps/GetAppList/v0002/", nil)
 	if err != nil {
 		return nil, err
 	}
-	if len(appIds) > 0 {
-		ids := make([]string, len(appIds))
-		for i := range appIds {
-			ids[i] = strconv.Itoa(appIds[i])
-		}
-		req.Form["appids"] = ids
+	req.Form = map[string][]string{
+		"appids": []string{strconv.Itoa(appId)},
 	}
 
 	resp, err := http.DefaultClient.Do(req)
@@ -161,8 +172,13 @@ func GetAppDetails(appIds ...int) (map[string]*AppDetail, error) {
 		return nil, err
 	}
 
-	var appdetails map[string]*AppDetail
-	dec := json.NewDecoder(resp.Body)
-	dec.Decode(&appdetails)
-	return appdetails, nil
+	appdetails := make(map[string]AppDetail)
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	//dec := json.NewDecoder()
+	//dec.Decode(&appdetails)
+	err = json.Unmarshal(b, &appdetails)
+	return appdetails, err
 }

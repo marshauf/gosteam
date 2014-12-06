@@ -1,8 +1,8 @@
 package steam
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
 type supportedAPIListResponse struct {
@@ -38,7 +38,9 @@ func GetSupportedAPIList(accessKey string) (*APIList, error) {
 		return nil, err
 	}
 	if len(accessKey) > 0 {
-		req.Form["key"] = []string{accessKey}
+		req.Form = map[string][]string{
+			"key": []string{accessKey},
+		}
 	}
 
 	resp, err := http.DefaultClient.Do(req)

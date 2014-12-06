@@ -1,8 +1,8 @@
 package steam
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 )
 
 type ServerInfo struct {

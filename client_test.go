@@ -39,12 +39,19 @@ func TestGetAppList(t *testing.T) {
 }
 
 func TestGetAppDetails(t *testing.T) {
-	ids := []int{}
-	details, err := GetAppDetails(ids...)
+	details, err := GetAppDetails(57690)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(details) != len(ids) {
-		t.Errorf("Requested %d AppDetails, got %d", len(details), len(ids))
+	if len(details) != 1 {
+		t.Logf("%v", details)
+		t.Errorf("Requested 1 AppDetails, got %d", len(details))
+	}
+}
+
+func TestUpToDateCheck(t *testing.T) {
+	_, err := UpToDateCheck(5, 0)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
