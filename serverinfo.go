@@ -15,6 +15,8 @@ func GetServerInfo() (*ServerInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
 	var info ServerInfo
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&info)

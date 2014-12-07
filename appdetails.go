@@ -163,6 +163,7 @@ func GetAppDetails(appID int) (map[string]AppDetail, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	appdetails := make(map[string]AppDetail)
 	dec := json.NewDecoder(resp.Body)

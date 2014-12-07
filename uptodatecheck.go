@@ -25,6 +25,8 @@ func UpToDateCheck(appid, version int) (*UpToDateCheckResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
 	var utdcResp upToDateCheckResponse
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&utdcResp)

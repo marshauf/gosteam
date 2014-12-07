@@ -23,6 +23,8 @@ func GetAppList() (*AppList, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
 	var appListResp appListResponse
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&appListResp)

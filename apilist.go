@@ -41,6 +41,8 @@ func GetSupportedAPIList(accessKey string) (*APIList, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
 	var apiListResp supportedAPIListResponse
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&apiListResp)
