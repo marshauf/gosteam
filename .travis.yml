@@ -7,5 +7,5 @@ install:
 - go get code.google.com/p/go.tools/cmd/vet
 script:
 - go test -race -cpu=2 -v
-- golint
+- $HOME/gopath/bin/golint
 - go tool vet -v .
