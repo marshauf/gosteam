@@ -2,7 +2,6 @@ package steam
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -15,7 +14,7 @@ type AppDetail struct {
 type AppData struct {
 	Type         string `json:"type"`
 	Name         string `json:"name"`
-	SteamAppId   int    `json:"steam_appid"`
+	SteamAppID   int    `json:"steam_appid"`
 	RequiredAgee int    `json:"required_age"`
 	IsFree       bool   `json:"is_free"`
 	Dlc          []int  `json:"dlc"`
@@ -90,7 +89,7 @@ type PackageGroup struct {
 }
 
 type SubPackage struct {
-	PackageId                string `json:"packageid"`
+	PackageID                string `json:"packageid"`
 	PercentSavingsText       string `json:"percent_savings_text"`
 	PercentSavings           int    `json:"percent_savings"`
 	OptionText               string `json:"option_text"`
@@ -102,27 +101,27 @@ type SubPackage struct {
 
 type Metacritic struct {
 	Score int    `json:"score"`
-	Url   string `json:"url"`
+	URL   string `json:"url"`
 }
 
 type Category struct {
-	Id          string `json:"id"`
+	ID          string `json:"id"`
 	Description string `json:"description"`
 }
 
 type Genre struct {
-	Id          string `json:"id"`
+	ID          string `json:"id"`
 	Description string `json:"description"`
 }
 
 type Screenshot struct {
-	Id            int    `json:"id"`
+	ID            int    `json:"id"`
 	PathThumbnail string `json:"path_thumbnail"`
 	PathFull      string `json:"path_full"`
 }
 
 type Movie struct {
-	Id        int    `json:"id"`
+	ID        int    `json:"id"`
 	Name      string `json:"name"`
 	Thumbnail string `json:"thumbnail"`
 	Webm      *Webm  `json:"webm"`
@@ -154,31 +153,19 @@ type ReleaseDate struct {
 }
 
 type SupportInfo struct {
-	Url   string `json:"url"`
+	URL   string `json:"url"`
 	Email string `json:"email"`
 }
 
-func GetAppDetails(appId int) (map[string]AppDetail, error) {
-	req, err := http.NewRequest("GET", "http://api.steampowered.com/ISteamApps/GetAppList/v0002/", nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Form = map[string][]string{
-		"appids": []string{strconv.Itoa(appId)},
-	}
-
-	resp, err := http.DefaultClient.Do(req)
+func GetAppDetails(appID int) (map[string]AppDetail, error) {
+	//http://store.steampowered.com/api/appdetails/?appids=57690
+	resp, err := http.Get("http://store.steampowered.com/api/appdetails/?appids=" + strconv.Itoa(appID))
 	if err != nil {
 		return nil, err
 	}
 
 	appdetails := make(map[string]AppDetail)
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	//dec := json.NewDecoder()
-	//dec.Decode(&appdetails)
-	err = json.Unmarshal(b, &appdetails)
+	dec := json.NewDecoder(resp.Body)
+	dec.Decode(&appdetails)
 	return appdetails, err
 }

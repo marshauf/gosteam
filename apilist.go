@@ -21,7 +21,7 @@ type Interface struct {
 type Method struct {
 	Name       string      `json:"name"`
 	Version    int         `json:"version"`
-	HttpMethod string      `json:"httpmethod"`
+	HTTPMethod string      `json:"httpmethod"`
 	Parameters []Parameter `json:"parameters"`
 }
 
@@ -33,21 +33,14 @@ type Parameter struct {
 }
 
 func GetSupportedAPIList(accessKey string) (*APIList, error) {
-	req, err := http.NewRequest("GET", "http://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v0001/", nil)
-	if err != nil {
-		return nil, err
-	}
+	url := "http://api.steampowered.com/ISteamWebAPIUtil/GetSupportedAPIList/v0001/"
 	if len(accessKey) > 0 {
-		req.Form = map[string][]string{
-			"key": []string{accessKey},
-		}
+		url += "?key=" + accessKey
 	}
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
-
 	var apiListResp supportedAPIListResponse
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&apiListResp)

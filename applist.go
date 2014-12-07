@@ -14,21 +14,15 @@ type AppList struct {
 }
 
 type App struct {
-	Id   int    `json:"appid"`
+	ID   int    `json:"appid"`
 	Name string `json:"name"`
 }
 
 func GetAppList() (*AppList, error) {
-	req, err := http.NewRequest("GET", "http://api.steampowered.com/ISteamApps/GetAppList/v0002/", nil)
+	resp, err := http.Get("http://api.steampowered.com/ISteamApps/GetAppList/v0002/")
 	if err != nil {
 		return nil, err
 	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
 	var appListResp appListResponse
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&appListResp)

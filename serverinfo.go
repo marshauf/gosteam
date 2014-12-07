@@ -11,16 +11,10 @@ type ServerInfo struct {
 }
 
 func GetServerInfo() (*ServerInfo, error) {
-	req, err := http.NewRequest("GET", "http://api.steampowered.com/ISteamWebAPIUtil/GetServerInfo/v0001/", nil)
+	resp, err := http.Get("http://api.steampowered.com/ISteamWebAPIUtil/GetServerInfo/v0001/")
 	if err != nil {
 		return nil, err
 	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
 	var info ServerInfo
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&info)

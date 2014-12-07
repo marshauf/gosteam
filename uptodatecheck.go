@@ -18,20 +18,11 @@ type UpToDateCheckResponse struct {
 }
 
 func UpToDateCheck(appid, version int) (*UpToDateCheckResponse, error) {
-	req, err := http.NewRequest("GET", "http://api.steampowered.com/ISteamApps/UpToDateCheck/v0001/", nil)
+	url := "http://api.steampowered.com/ISteamApps/UpToDateCheck/v0001/?appid=" + strconv.Itoa(appid) + "&version=" + strconv.Itoa(version)
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
-	req.Form = map[string][]string{
-		"appid":   []string{strconv.Itoa(appid)},
-		"version": []string{strconv.Itoa(version)},
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
 	var utdcResp upToDateCheckResponse
 	dec := json.NewDecoder(resp.Body)
 	dec.Decode(&utdcResp)
